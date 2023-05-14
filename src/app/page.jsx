@@ -6,6 +6,7 @@ import classes from "./page.module.css";
 export default function Home() {
   return (
     <div className={classes.container}>
+      <h2>BlogApp Website</h2>
       <div className={classes.wrapper}>
         {blogs.map((blog) => (
           <BlogCard key={blog.title} blog={blog} />
