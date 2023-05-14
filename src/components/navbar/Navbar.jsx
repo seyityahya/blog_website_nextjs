@@ -53,7 +53,10 @@ const Navbar = () => {
               )}
             </div>
           ) : (
-            <h2>asdfg</h2>
+            <>
+              <button className={classes.login}>Log in</button>
+              <Link href="/register">Register</Link>
+            </>
           )}
         </ul>
       </div>
