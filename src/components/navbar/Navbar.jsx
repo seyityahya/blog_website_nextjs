@@ -42,7 +42,6 @@ const Navbar = () => {
                   <button
                     onClick={() => {
                       signOut();
-                      handleHideDropdown();
                     }}
                     className={classes.logout}
                   >

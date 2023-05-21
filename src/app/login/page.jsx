@@ -1,11 +1,12 @@
 "use client";
-import { signIn } from "next-auth/react";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import classes from "./login.module.css";
+import { signIn } from "next-auth/react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -16,7 +17,7 @@ const Login = () => {
     e.preventDefault();
 
     if (password === "" || email === "") {
-      toast.error("fill all field");
+      toast.error("Fill all fields!");
       return;
     }
 
@@ -59,7 +60,7 @@ const Login = () => {
           />
           <button className={classes.submitButton}>Log in</button>
           <Link className={classes.loginNow} href="/register">
-            Dont have an account? <br /> Register now
+            Don&apos;t have an account? <br /> Register now.
           </Link>
         </form>
       </div>

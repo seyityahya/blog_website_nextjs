@@ -1,5 +1,5 @@
 .container {
-  width: 23%;
+  width: 25%;
   height: 540px;
   box-shadow: 2px 5px 27px -8px rgba(0, 0, 0, 0.15);
   transition: 150ms;
@@ -18,11 +18,17 @@
   flex-direction: column;
 }
 
+.wrapper > .imgContainer {
+  width: 350px;
+  height: 350px;
+}
+
 .wrapper > .imgContainer > img {
   object-fit: cover;
   border-radius: 20px;
-  width: 100%;
+  width: 300px;
   margin: 0 auto;
+  height: 350px;
 }
 
 .blogData {
