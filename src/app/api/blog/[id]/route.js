@@ -13,7 +13,7 @@ export async function GET(req, ctx) {
       .populate("authorId")
       .select("-password");
 
-    return new Response(JSON.stringify(blog), { status });
+    return new Response(JSON.stringify(blog), { status: 200 });
   } catch (error) {
     return new Response(JSON.stringify(null), { status: 500 });
   }
@@ -93,3 +93,7 @@ export async function DELETE(req, ctx) {
     return new Response(JSON.stringify(null), { status: 500 });
   }
 }
+
+// blog -> [id] -> like -> route.js
+
+// http://localhost:3000/api/blog/someid/like
