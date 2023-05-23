@@ -15,8 +15,6 @@ const Navbar = () => {
 
   const handleHideDropdown = () => setShowDropdown((prev) => false);
 
-  const loggedIn = false;
-
   return (
     <div className={classes.container}>
       <div className={classes.wrapper}>
@@ -49,7 +47,7 @@ const Navbar = () => {
                   </button>
                   <Link
                     onClick={handleHideDropdown}
-                    href="/create-post"
+                    href="/create-blog"
                     className={classes.create}
                   >
                     Create
