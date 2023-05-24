@@ -1,17 +1,20 @@
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import classes from "./blogCard.module.css";
 
-const BlogCard = ({ blog: { title, desc, img } }) => {
-  const isLiked = true;
+const BlogCard = ({
+  blog: { title, desc, imageUrl, likes, authorId, _id },
+}) => {
+  const { data: session } = useSession();
 
   return (
     <div className={classes.container}>
       <div className={classes.wrapper}>
         <Link className={classes.imgContainer} href="/">
-          <Image src={img} alt="blog resmi" width="auto" height="auto" />
+          <Image src={imageUrl} alt="blog resmi" width="auto" height="auto" />
         </Link>
         <div className={classes.blogData}>
           <div className={classes.left}>

@@ -3,17 +3,18 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { BsFillPenFill } from "react-icons/bs";
-import { AiFillDelete } from "react-icons/ai";
+import { AiFillDelete, AiFillLike, AiOutlineLike } from "react-icons/ai";
 import React, { useEffect, useState } from "react";
 import classes from "./blog.module.css";
+import { format } from "timeago.js";
+import { useRouter } from "next/navigation";
 
 const BlogDetails = (ctx) => {
   const [blogDetails, setBlogDetails] = useState("");
   const [isLiked, setIsLiked] = useState(false);
   const [blogLikes, setBlogLikes] = useState(0);
   const { data: session } = useSession();
-
-  console.log(blogDetails);
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchBlog() {
@@ -25,12 +26,38 @@ const BlogDetails = (ctx) => {
 
       setBlogDetails(blog);
       setIsLiked(blog.likes.includes(session?.user?._id));
-      setBlogLikes(blog?.likes?.length);
+      setBlogLikes(blog?.likes?.length || 0);
     }
     session && fetchBlog();
   }, [session]);
 
-  const handleDelete = async () => {};
+  const handleDelete = async () => {
+    try {
+      const confirmModal = confirm(
+        "Are you sure you want to delete your blog?"
+      );
+
+      if (confirmModal) {
+        const res = await fetch(
+          `http://localhost:3000/api/blog/${ctx.params.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${session?.user?.accessToken}`,
+            },
+            method: "DELETE",
+          }
+        );
+
+        if (res.ok) {
+          router.push("/");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleLike = async () => {};
 
   return (
     <div className={classes.container}>
@@ -56,6 +83,29 @@ const BlogDetails = (ctx) => {
               Author: <span>{blogDetails?.authorId?.username}</span>
             </div>
           )}
+        </div>
+        <div className={classes.row}>
+          <div className={classes.category}>
+            Category:
+            <span>{blogDetails?.category}</span>
+          </div>
+          <div className={classes.right}>
+            {blogLikes}{" "}
+            {isLiked ? (
+              <AiFillLike size={20} onClick={handleLike} />
+            ) : (
+              <AiOutlineLike size={20} onClick={handleLike} />
+            )}
+          </div>
+        </div>
+        <div className={classes.row}>
+          <p>{blogDetails?.desc}</p>
+          <span>
+            Posted: <span>{format(blogDetails?.createdAt)}</span>
+          </span>
+        </div>
+        <div className={classes.commentSection}>
+          <div className={classes.commentInput}></div>
         </div>
       </div>
     </div>
