@@ -1,7 +1,8 @@
+"use client";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 import classes from "./blogCard.module.css";
 
@@ -9,12 +10,42 @@ const BlogCard = ({
   blog: { title, desc, imageUrl, likes, authorId, _id },
 }) => {
   const { data: session } = useSession();
+  const [isLiked, setIsLiked] = useState(false);
+  const [blogLikes, setBlogLikes] = useState(0);
+
+  useEffect(() => {
+    session && likes && setIsLiked(likes.includes(session?.user?._id));
+    session && likes && setBlogLikes(likes.length);
+  }, [likes, session]);
+
+  const handleLike = async () => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/blog/${_id}/like`, {
+        headers: {
+          Authorization: `Bearer ${session?.user?.accessToken}`,
+        },
+        method: "PUT",
+      });
+
+      if (res.ok) {
+        if (isLiked) {
+          setIsLiked((prev) => !prev);
+          setBlogLikes((prev) => prev - 1);
+        } else {
+          setIsLiked((prev) => !prev);
+          setBlogLikes((prev) => prev + 1);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className={classes.container}>
       <div className={classes.wrapper}>
-        <Link className={classes.imgContainer} href="/">
-          <Image src={imageUrl} alt="blog resmi" width="auto" height="auto" />
+        <Link className={classes.imgContainer} href={`/blog/${_id}`}>
+          <Image src={imageUrl} alt="blog resmi" width="350" height="350" />
         </Link>
         <div className={classes.blogData}>
           <div className={classes.left}>
@@ -25,8 +56,12 @@ const BlogCard = ({
             </span>
           </div>
           <div className={classes.right}>
-            {12}{" "}
-            {isLiked ? <AiFillLike size={20} /> : <AiOutlineLike size={20} />}
+            {blogLikes}{" "}
+            {isLiked ? (
+              <AiFillLike onClick={handleLike} size={20} />
+            ) : (
+              <AiOutlineLike onClick={handleLike} size={20} />
+            )}
           </div>
         </div>
       </div>
