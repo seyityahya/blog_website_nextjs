@@ -43,10 +43,16 @@
   font-weight: bold;
   margin-top: 1.5rem;
   margin-bottom: 1.25rem;
+  width: 200px;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .blogData > .left > p {
   color: #666;
+  height: 40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .blogData > .left > span {
