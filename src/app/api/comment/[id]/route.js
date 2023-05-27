@@ -5,6 +5,7 @@ import Comment from "@/models/Comment";
 export async function GET(req, ctx) {
   await db.connect();
 
+  // blog id !!
   const id = ctx.params.id;
 
   try {
@@ -20,7 +21,6 @@ export async function DELETE(req, ctx) {
   await db.connect();
 
   const id = ctx.params.id;
-
   const accessToken = req.headers.get("authorization");
   const token = accessToken.split(" ")[1];
 
@@ -37,10 +37,11 @@ export async function DELETE(req, ctx) {
     const comment = await Comment.findById(id).populate("authorId");
     if (comment.authorId._id.toString() !== decodedToken._id.toString()) {
       return new Response(
-        JSON.stringify({ msg: "only author can delete his blog" }),
+        JSON.stringify({ msg: "Only author can delete his blog" }),
         { status: 401 }
       );
     }
+
     await Comment.findByIdAndDelete(id);
 
     return new Response(

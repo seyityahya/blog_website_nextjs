@@ -1,11 +1,13 @@
 "use client";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
-import Link from "next/link";
-import { BsFillPenFill } from "react-icons/bs";
-import { AiFillDelete, AiFillLike, AiOutlineLike } from "react-icons/ai";
 import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import classes from "./blog.module.css";
+import { BsFillPencilFill } from "react-icons/bs";
+import { AiFillDelete, AiFillLike, AiOutlineLike } from "react-icons/ai";
+import Link from "next/link";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { format } from "timeago.js";
 import { useRouter } from "next/navigation";
 import Comment from "@/components/comment/Comment";
@@ -44,7 +46,7 @@ const BlogDetails = (ctx) => {
       const blog = await res.json();
 
       setBlogDetails(blog);
-      setIsLiked(blog.likes.includes(session?.user?._id));
+      setIsLiked(blog?.likes?.includes(session?.user?._id));
       setBlogLikes(blog?.likes?.length || 0);
     }
     session && fetchBlog();
@@ -88,6 +90,7 @@ const BlogDetails = (ctx) => {
         }
       );
 
+      console.log(res);
       if (res.ok) {
         if (isLiked) {
           setIsLiked((prev) => !prev);
@@ -102,12 +105,44 @@ const BlogDetails = (ctx) => {
     }
   };
 
-  const handleComment = async () => {};
+  const handleComment = async () => {
+    if (commentText?.length < 2) {
+      toast.error("Comment must be at least 2 characters long");
+      return;
+    }
+
+    try {
+      const body = {
+        blogId: ctx.params.id,
+        authorId: session?.user?._id,
+        text: commentText,
+      };
+
+      const res = await fetch(`http://localhost:3000/api/comment`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.user?.accessToken}`,
+        },
+        method: "POST",
+        body: JSON.stringify(body),
+      });
+
+      const newComment = await res.json();
+
+      setComments((prev) => {
+        return [newComment, ...prev];
+      });
+
+      setCommentText("");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className={classes.container}>
       <div className={classes.wrapper}>
-        <Image alt="" src={blogDetails?.imageUrl} width="750" height="650" />
+        <Image src={blogDetails?.imageUrl} width="750" height="650" />
         <div className={classes.row}>
           <h3 className={classes.title}>{blogDetails?.title}</h3>
           {blogDetails?.authorId?._id.toString() ===
@@ -117,10 +152,11 @@ const BlogDetails = (ctx) => {
                 className={classes.editButton}
                 href={`/blog/edit/${ctx.params.id}`}
               >
-                Edit <BsFillPenFill />
+                Edit <BsFillPencilFill />
               </Link>
               <button onClick={handleDelete} className={classes.deleteButton}>
-                Delete <AiFillDelete />
+                Delete
+                <AiFillDelete />
               </button>
             </div>
           ) : (
@@ -177,6 +213,7 @@ const BlogDetails = (ctx) => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };
