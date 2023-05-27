@@ -8,13 +8,32 @@ import React, { useEffect, useState } from "react";
 import classes from "./blog.module.css";
 import { format } from "timeago.js";
 import { useRouter } from "next/navigation";
+import Comment from "@/components/comment/Comment";
+import person from "../../../../public/person.jpg";
 
 const BlogDetails = (ctx) => {
   const [blogDetails, setBlogDetails] = useState("");
   const [isLiked, setIsLiked] = useState(false);
   const [blogLikes, setBlogLikes] = useState(0);
+
+  const [commentText, setCommentText] = useState("");
+  const [comments, setComments] = useState([]);
+
   const { data: session } = useSession();
   const router = useRouter();
+
+  useEffect(() => {
+    async function fetchComments() {
+      const res = await fetch(
+        `http://localhost:3000/api/comment/${ctx.params.id}`,
+        { cache: "no-store" }
+      );
+      const comments = await res.json();
+
+      setComments(comments);
+    }
+    fetchComments();
+  }, []);
 
   useEffect(() => {
     async function fetchBlog() {
@@ -83,6 +102,8 @@ const BlogDetails = (ctx) => {
     }
   };
 
+  const handleComment = async () => {};
+
   return (
     <div className={classes.container}>
       <div className={classes.wrapper}>
@@ -129,7 +150,31 @@ const BlogDetails = (ctx) => {
           </span>
         </div>
         <div className={classes.commentSection}>
-          <div className={classes.commentInput}></div>
+          <div className={classes.commentInput}>
+            <Image src={person} width="45" height="45" alt="" />
+            <input
+              value={commentText}
+              type="text"
+              placeholder="Type message..."
+              onChange={(e) => setCommentText(e.target.value)}
+            />
+            <button onClick={handleComment}>Post</button>
+          </div>
+          <div className={classes.comments}>
+            {comments?.length > 0 ? (
+              comments.map((comment) => (
+                <Comment
+                  key={comment._id}
+                  comment={comment}
+                  setComments={setComments}
+                />
+              ))
+            ) : (
+              <h4 className={classes.noComments}>
+                No comments. Be the first one to leave a comment!
+              </h4>
+            )}
+          </div>
         </div>
       </div>
     </div>
